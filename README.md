@@ -8,7 +8,7 @@ Application to convert one currency to another.
 - User can get result in selected currencies.
 - User can see exchanges history.
 
-## NTH feauters
+## NTH features
 - User can login and save session.
 
 ## Tools & Technologies
