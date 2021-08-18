@@ -1,0 +1,45 @@
+<html>
+<head>
+    <style>
+        .main{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        }
+        h1{
+        color: red;
+        }
+        p{
+        color: blue;
+        }
+    </style>
+    <title>Hello World</title>
+</head>
+<body>
+<div class="main">
+
+<h1>Hellow Worlds!</h1>
+<p>
+    THis is a test, so do not take it seriously :P
+</p>
+</div>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+    console.log("running!!");
+    axios({
+    method: 'get',
+    url: 'https://jsonplaceholder.typicode.com/users'
+    })
+    .then( res => console.log(res));
+
+    /* axios({
+  method: 'post',
+  url: '/user/12345',
+  data: {
+    firstName: 'Fred',
+    lastName: 'Flintstone'
+  }
+}); */
+</script>
+</body>
+</html>
