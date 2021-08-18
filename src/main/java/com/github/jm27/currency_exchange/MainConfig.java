@@ -29,7 +29,7 @@ public class MainConfig {
     // Reactor Client Server INIT.
     public HttpClient initializeReactorClient(){
         HttpClient client = HttpClient.create().headers(
-                        h -> h.add("x-rapidapi-key", "d2e5268630msh2a3882309cb2cb0p1306a4jsnecab62a0cbc7")
+                        h -> h.add("x-rapidapi-key", "?")
                 )
                 .keepAlive(true);
 
