@@ -1,12 +1,15 @@
 package com.github.jm27.currency_exchange.domain;
 
+
 public class Transaction {
     private int id;
     private String from;
     private String to;
-    private Double amount;
+    private String amount;
 
-    public Transaction(int id, String from, String to, Double amount) {
+    public Transaction(){}
+
+    public Transaction(int id, String from, String to, String amount) {
         this.id = id;
         this.from = from;
         this.to = to;
@@ -15,9 +18,10 @@ public class Transaction {
 
     // NO ID Constructor.
     public Transaction(String from, String to, Double amount) {
+        this.id = 1;
         this.from = from;
         this.to = to;
-        this.amount = amount;
+        this.amount = String.valueOf(amount);
     }
 
     public int getId() {
@@ -44,11 +48,11 @@ public class Transaction {
         this.to = to;
     }
 
-    public Double getAmount() {
+    public String getAmount() {
         return amount;
     }
 
-    public void setAmount(Double amount) {
+    public void setAmount(String amount) {
         this.amount = amount;
     }
 }

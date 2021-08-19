@@ -1,10 +1,10 @@
 package com.github.jm27.currency_exchange.repository;
 
 import com.datastax.oss.driver.api.core.CqlSession;
-import com.datastax.oss.driver.api.core.type.DataTypes;
-import com.datastax.oss.driver.api.querybuilder.SchemaBuilder;
-import com.datastax.oss.driver.api.querybuilder.schema.CreateKeyspace;
-import com.datastax.oss.driver.api.querybuilder.schema.CreateTable;
+import com.datastax.oss.driver.api.core.cql.BoundStatement;
+import com.datastax.oss.driver.api.core.cql.PreparedStatement;
+import com.github.jm27.currency_exchange.domain.Transaction;
+import reactor.core.publisher.Flux;
 
 public class TransactionRepo {
     private final CqlSession session;
@@ -13,21 +13,41 @@ public class TransactionRepo {
         this.session = session;
     }
 
-    // Create key space for transactions.
-    public void InitKeySpace() {
-        CreateKeyspace exchanges = SchemaBuilder.createKeyspace("exchanges")
-                .ifNotExists()
-                .withSimpleStrategy(1);
+    // CREATE
+    public Transaction create(Transaction transaction){
+        // Statement
+        PreparedStatement insertStatement = session.prepare(
+                "INSERT INTO exchanges.transactions (id, Foo, Top, Amount) VALUES (?, ?, ?, ?)"
+        );
 
-        session.execute(exchanges.build());
+        // Statement
+        BoundStatement boundStatement = insertStatement.bind(
+                transaction.getId(),
+                transaction.getFrom(),
+                transaction.getTo(),
+                transaction.getAmount()
+        );
 
-        CreateTable transactions = SchemaBuilder.createTable("exchanges", "transactions")
-                .ifNotExists()
-                .withPartitionKey("id", DataTypes.INT);
-//                .withColumn("_from", DataTypes.TEXT)
-//                .withColumn("_to", DataTypes.TEXT)
-//                .withColumn("_amount", DataTypes.TEXT);
+        session.execute(boundStatement);
+        return transaction;
+    }
 
-        session.execute(transactions.build());
+    public Flux<Transaction> getAll(){
+
+        PreparedStatement readStatement = session.prepare("SELECT * FROM exchanges.transactions");
+
+        BoundStatement boundStatement = readStatement.bind();
+
+        return Flux.from(session.executeReactive(boundStatement))
+                .map(
+                row -> new Transaction
+                        (
+                        row.getInt("id"),
+                        row.getString("Foo"),
+                        row.getString("Top"),
+                        row.getString("Amount")
+                )
+        );
+
     }
 }

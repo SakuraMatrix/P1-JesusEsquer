@@ -12,9 +12,9 @@ public class TransactionService {
         this.transactionRepository = transactionRepository;
     }
 //
-//    public Flux<Transaction> getAll() {
-//        return transactionRepository.getAll();
-//    }
+    public Flux<Transaction> getAll() {
+        return transactionRepository.getAll();
+    }
 //
 //    public Mono<Transaction> get(String id) {
 //        return transactionRepository.get(id);
@@ -24,7 +24,7 @@ public class TransactionService {
 //        return  transactionRepository.get(id);
 //    }
 //
-//    public Transaction create(Transaction transaction) {
-//        return transactionRepository.create(transaction);
-//    }
+    public Transaction create(Transaction transaction) {
+        return transactionRepository.create(transaction);
+    }
 }
