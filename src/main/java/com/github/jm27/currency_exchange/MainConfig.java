@@ -121,12 +121,23 @@ public class MainConfig {
                 .port(8080)
                 .route(routes -> // Create route. Get method, respond with string
                         routes
-                                .get("/exchanges", (request, response) ->
+                                .get("/exchanges", (request, response) -> // Get all exchanges
                                         response.send(
                                                 transactionService.getAll()
                                                         .map(Main::toByteBuff)
                                         ))
-                                .get("/currencies", (request, response) ->
+                                .get("/exchanges/id={id}", (request, response) -> // Get one exchange
+                                        response.send(
+                                                transactionService.get(request.param("id"))
+                                                        .map(Main::toByteBuff)
+                                        ))
+                                .delete("/exchanges/delete/id={id}", (request, response) -> {
+
+                                    transactionService.delete(request.param("id"));
+                                    return response.status(200).addHeader("Message", "Succesfully deleted Transaction");
+
+                                } )
+                                .get("/currencies", (request, response) -> // Get list of currencies
                                         response.send(ByteBufFlux.fromString(clientGetCurrencies(client))))
                                 .post("/echo", // Post request
                                         (request, response) ->
