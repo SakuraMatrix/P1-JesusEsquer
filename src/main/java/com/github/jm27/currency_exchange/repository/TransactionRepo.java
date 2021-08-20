@@ -21,11 +21,12 @@ public class TransactionRepo {
     }
 
     // CREATE
-    public Transaction create(Transaction transaction){
+    public Transaction create(Transaction transaction) {
         log.info("Inserting into keyspace new transaction");
+        System.out.println(transaction.toString());
         // Statement
         PreparedStatement insertStatement = session.prepare(
-                "INSERT INTO exchanges.transactions (id, Foo, Top, Amount) VALUES (?, ?, ?, ?)"
+                "INSERT INTO exchanges.transactions (id, Foo, Top, Amount, Timestamp) VALUES (?, ?, ?, ?, ?)"
         );
 
         // Statement
@@ -33,16 +34,16 @@ public class TransactionRepo {
                 transaction.getId(),
                 transaction.getFrom(),
                 transaction.getTo(),
-                transaction.getAmount()
+                transaction.getAmount(),
+                transaction.getTimestamp()
         );
 
-//        Mono.from(session.executeReactive(boundStatement)).subscribe();
+        Mono.from(session.executeReactive(boundStatement)).subscribe();
 
-        session.execute(boundStatement);
         return transaction;
     }
 
-    public Flux<Transaction> getAll(){
+    public Flux<Transaction> getAll() {
         log.info("Retrieving all exchanges from keyspace");
         PreparedStatement readStatement = session.prepare("SELECT * FROM exchanges.transactions");
 
@@ -50,14 +51,15 @@ public class TransactionRepo {
 
         return Flux.from(session.executeReactive(boundStatement))
                 .map(
-                row -> new Transaction
-                        (
-                        row.getInt("id"),
-                        row.getString("Foo"),
-                        row.getString("Top"),
-                        row.getString("Amount")
-                )
-        );
+                        row -> new Transaction
+                                (
+                                        row.getUuid("id"),
+                                        row.getString("Foo"),
+                                        row.getString("Top"),
+                                        row.getDouble("Amount"),
+                                        row.getInstant("Timestamp")
+                                )
+                );
 
     }
 }

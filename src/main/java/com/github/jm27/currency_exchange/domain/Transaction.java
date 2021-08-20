@@ -1,29 +1,33 @@
 package com.github.jm27.currency_exchange.domain;
 
-
+import java.time.Instant;
 import java.util.Objects;
+import java.util.UUID;
 
 public class Transaction {
-    private int id;
+    private UUID id;
     private String from;
     private String to;
-    private String amount;
+    private Double amount;
+    private Instant timestamp;
 
-    public Transaction(){}
+    public Transaction() {
+    }
 
-    public Transaction(int id, String from, String to, String amount) {
+    public Transaction(String from, String to, Double amount) {
+        this.id = UUID.randomUUID();
+        this.from = from;
+        this.to = to;
+        this.amount = amount;
+        this.timestamp = Instant.now();
+    }
+
+    public Transaction(UUID id, String from, String to, Double amount, Instant timestamp) {
         this.id = id;
         this.from = from;
         this.to = to;
         this.amount = amount;
-    }
-
-    // NO ID Constructor.
-    public Transaction(String from, String to, Double amount) {
-        this.id = 1;
-        this.from = from;
-        this.to = to;
-        this.amount = String.valueOf(amount);
+        this.timestamp = timestamp;
     }
 
     @Override
@@ -31,19 +35,19 @@ public class Transaction {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Transaction that = (Transaction) o;
-        return id == that.id && Objects.equals(from, that.from) && Objects.equals(to, that.to) && Objects.equals(amount, that.amount);
+        return Objects.equals(id, that.id) && Objects.equals(from, that.from) && Objects.equals(to, that.to) && Objects.equals(amount, that.amount) && Objects.equals(timestamp, that.timestamp);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, from, to, amount);
+        return Objects.hash(id, from, to, amount, timestamp);
     }
 
-    public int getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -63,11 +67,30 @@ public class Transaction {
         this.to = to;
     }
 
-    public String getAmount() {
+    public Double getAmount() {
         return amount;
     }
 
-    public void setAmount(String amount) {
+    public void setAmount(Double amount) {
         this.amount = amount;
+    }
+
+    public Instant getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Instant timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "id=" + id +
+                ", from='" + from + '\'' +
+                ", to='" + to + '\'' +
+                ", amount=" + amount +
+                ", timestamp=" + timestamp +
+                '}';
     }
 }
