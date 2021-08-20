@@ -12,6 +12,10 @@ import com.github.jm27.currency_exchange.repository.TransactionRepo;
 import com.github.jm27.currency_exchange.service.TransactionService;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import reactor.core.publisher.Mono;
 import reactor.netty.ByteBufFlux;
 import reactor.netty.DisposableServer;
@@ -23,15 +27,24 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 
+@Configuration
+@ComponentScan
 public class MainConfig {
+    @Autowired TransactionService transactionService;
 
+
+    @Bean
+    public CqlSession session() {
+        return CqlSession.builder().build();
+    }
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    private static final CqlSession CQL_SESSION = CqlSession.builder().build();
-    private static final TransactionRepo TRANSACTION_REPO = new TransactionRepo(CQL_SESSION);
-    private static final TransactionService TRANSACTION_SERVICE = new TransactionService(TRANSACTION_REPO);
+//    private static final CqlSession CQL_SESSION = CqlSession.builder().build();
+//    private static final TransactionRepo TRANSACTION_REPO = new TransactionRepo(CQL_SESSION);
+//    private static final TransactionService TRANSACTION_SERVICE = new TransactionService(TRANSACTION_REPO);
 
     public static ByteBuf toByteBuff(Object o) {
+
         try {
             return Unpooled.buffer()
                     .writeBytes(OBJECT_MAPPER.writerFor(Transaction.class).writeValueAsBytes(o));
@@ -58,12 +71,13 @@ public class MainConfig {
     }
 
     // Init Cassandra DB session, Keyspace and table
-    public void initDBKeySpaceTable(){
+    @Bean
+    public String initDBKeySpaceTable(CqlSession session){
         CreateKeyspace exchanges = SchemaBuilder.createKeyspace("exchanges")
                 .ifNotExists()
                 .withSimpleStrategy(1);
 
-        CQL_SESSION.execute(exchanges.build());
+        session.execute(exchanges.build());
 
         CreateTable transactions = SchemaBuilder.createTable("exchanges", "transactions")
                 .ifNotExists()
@@ -72,8 +86,10 @@ public class MainConfig {
                 .withColumn("Top", DataTypes.TEXT)
                 .withColumn("Amount", DataTypes.TEXT);
 
-        CQL_SESSION.execute(transactions.build());
+        session.execute(transactions.build());
         System.out.println("DB init Success!");
+
+        return "Success";
     }
 
 
@@ -123,6 +139,7 @@ public class MainConfig {
 
 
     // Reactor Server.
+    @Bean
     public DisposableServer initDisposableServer() throws URISyntaxException {
         // HTML Index file
         Path index = Paths.get(Main.class.getResource("/index.html").toURI());
@@ -141,7 +158,7 @@ public class MainConfig {
                                 routes
                                         .get("/exchanges", (request, response) ->
                                                 response.send(
-                                                        TRANSACTION_SERVICE.getAll()
+                                                        transactionService.getAll()
                                                                 .map(MainConfig::toByteBuff)
                                                 ))
                                         .get("/currencies", (request, response) ->

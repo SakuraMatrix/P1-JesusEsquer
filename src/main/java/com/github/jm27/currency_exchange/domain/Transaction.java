@@ -1,6 +1,8 @@
 package com.github.jm27.currency_exchange.domain;
 
 
+import java.util.Objects;
+
 public class Transaction {
     private int id;
     private String from;
@@ -22,6 +24,19 @@ public class Transaction {
         this.from = from;
         this.to = to;
         this.amount = String.valueOf(amount);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Transaction that = (Transaction) o;
+        return id == that.id && Objects.equals(from, that.from) && Objects.equals(to, that.to) && Objects.equals(amount, that.amount);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, from, to, amount);
     }
 
     public int getId() {
