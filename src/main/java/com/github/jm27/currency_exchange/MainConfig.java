@@ -153,7 +153,7 @@ public class MainConfig {
                                                         .map(Main::toByteBuff)
                                                 )
                                 )
-                                .file("/index", index) // Serve file on route
+                                .file("/thanks", index) // Serve file on route
                 )
                 .bindNow();
 
