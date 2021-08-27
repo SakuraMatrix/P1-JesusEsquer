@@ -44,7 +44,7 @@ Run
 
 This will start the application.
 
-###End Points
+End Points
 
     -GET "/exchanges" - List all exchanges history
 
